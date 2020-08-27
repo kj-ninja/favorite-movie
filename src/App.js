@@ -1,26 +1,61 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, {useState} from "react";
+import {MOVIES_FETCH, MOVIES_FETCH_ERROR} from "./Actions";
+import Navigation from "./Components/Navigation";
+import Search from "./Components/Search";
+import Movies from "./Components/Movies";
+import Footer from "./Components/Footer";
 
-function App() {
+const App = () => {
+  const [movies, setMovies] = useState([]);
+  const [error, setError] = useState(false);
+
+  const dispatch = (action) => {
+    switch (action.type) {
+      case MOVIES_FETCH: {
+        setMovies(action.payload);
+        setError(false);
+        break;
+      }
+
+      case MOVIES_FETCH_ERROR: {
+        setMovies([]);
+        setError(action.payload);
+        break;
+      }
+
+      default:
+        console.warn("You should specify action type.");
+    }
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Navigation/>
+
+      <div className="jumbotron jumbotron-fluid">
+        <div className="container">
+          <h1 className="display-4">Twoja baza filmów</h1>
+          <p className="lead">
+            Wyszukuj swoje ulubione filmy. Dane dostarcza <a href="https://www.themoviedb.org" target="_blank">The Movie
+            DB</a>.
+          </p>
+        </div>
+      </div>
+
+      <div className="container py-5">
+        <div className="row">
+          <div className="col-md text-center">
+            <h3 className="lead">Znajdź swój ulubiony film!</h3>
+            <Search dispatch={dispatch}/>
+          </div>
+        </div>
+      </div>
+
+      {error !== false && <div className="col-md text-center"><h3>{error.message}</h3></div>}
+      {movies.length === 0 ? null : <Movies movies={movies}/>}
+      <Footer/>
+    </>
   );
-}
+};
 
 export default App;
